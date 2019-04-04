@@ -1,0 +1,15 @@
+time{
+    font-size: 8;
+    font-family: monospace;
+    color: lightgrey;
+}
+a{
+    color: red;
+}
+ul{
+    list-style: square;
+}
+
+h1{
+    text-align: left;
+}
