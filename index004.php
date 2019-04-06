@@ -24,6 +24,7 @@ Version 4
     - adding in the due date and time till due functions
     - added in disable add task until text input 
     - cleared JS session Storage on clear
+    - added in weather widget from : https://weatherwidget.io/ - seems helpful to know weather to plan to do items
     
 */
 
@@ -53,13 +54,21 @@ $_SESSION['storeDate'] = $showDate;
 <!-- create and display the form -->
 
 <form role = "form" action = "<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method = "POST"> 
+
+  <!-- added in weather widget from https://weatherwidget.io/ - useful to plan to-do items 
+<a class="weatherwidget-io" href="https://forecast7.com/en/n33d9218d42/cape-town/" data-label_1="CAPE TOWN" data-label_2="WEATHER" data-icons="Climacons Animated" data-theme="clear" >CAPE TOWN WEATHER</a>
+    <script>
+    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+    </script>
+    
+ end of  weather widget -->  
     
     <h1> ToDo App</h1><br>
 
-    Enter a Task : <input type = "text" name = "inputItem" placeholder = "Enter your tasks here " autofocus />
+    Enter a Task : <input type = "text" name = "inputItem" placeholder = "Enter your tasks here " required="required" autofocus />
     Select a due Date <input type = "date" name = "inputDate" value="<?php echo date('Y-m-d'); ?>"/>
     
-    <input type = "submit" class="btn btn-success" name = "addTask" value = " Add " disabled> 
+    <input type = "submit" class="btn btn-success" name = "addTask" value = " Add "> 
     
     <a href="Logout.php" class="btn btn-danger" id="clearData" onclick="return confirm('You are about to clear the list - are you sure? - click OK to confirm');">Clear ALL items</a>
     
@@ -84,7 +93,9 @@ $_SESSION['storeDate'] = $showDate;
        return;
  
  }
-   display();
+    // calls the display function one the session array is populated
+ if (isset($_SESSION['listItem'])) { 
+     display(); }
     
   // function displays the array 
     function display(){
@@ -142,24 +153,7 @@ $_SESSION['storeDate'] = $showDate;
         console.log( "ready!" );
         renderDisplay();
         
-        
-        // disables the add Task ( submit button ) until text is entered into the input feild 
-        var changeHandler = function (e) {
-            console.log ($.trim(this.value));
-            if ($.trim(this.value)){
-                $("input[type=submit]").removeAttr("disabled");
-            } else {
-                $("input[type=submit]").attr("disabled", "disabled");        
-            }
-        };
-               // runs above function on the input text feilds 
-
-                    $("input[type=text]").keyup(
-                        changeHandler
-                    )
-                
-    
-   var lineState = 0;
+  var lineState = 0;
      
         $('li').click(function(){
             
@@ -169,20 +163,22 @@ $_SESSION['storeDate'] = $showDate;
                 }
             
             var strikeNum = $(this).index();
-            console.log( strikeNum );
-            console.log('line state ' + this.lineState);
+            console.log("current index " + strikeNum );
+        //    console.log('line state ' + this.lineState);
 
             
             if (this.lineState == 0){
                     $(this).css("text-decoration", "line-through");
-                    console.log( "line" );
                     this.lineState = 1;
-                  sessionStorage.setItem(strikeNum,'1');
+                    sessionStorage.setItem(strikeNum,'1');
+            //    console.log(sessionStorage.getItem(strikeNum));
+                   
             } else {
                     $(this).css("text-decoration", "none");
-                    console.log( "none" );
                     this.lineState = 0;  
                     sessionStorage.setItem(strikeNum,'0');
+              //      console.log(sessionStorage.getItem(strikeNum));
+                
             }
         });
     });
@@ -190,11 +186,23 @@ $_SESSION['storeDate'] = $showDate;
         
         function renderDisplay(){
                             
+        //    console.log(sessionStorage.length);
+             console.log('key0 ' + sessionStorage.getItem(sessionStorage.key(0)));
+              console.log('key1 ' + sessionStorage.getItem(sessionStorage.key(1)));
+               console.log('key2 ' + sessionStorage.getItem(sessionStorage.key(2)));
+           console.log('key3 ' + sessionStorage.getItem(sessionStorage.key(3)));
+            
+            
             for ( var x = 0; x<(sessionStorage.length); x++ ){
+                console.log('key ' + sessionStorage.getItem(sessionStorage.key(x)));
+                
               if (sessionStorage.getItem(sessionStorage.key(x)) == 1){
+               //   console.log(sessionStorage.getItem(sessionStorage.key(x)) == '1');
                 $('li').eq(x).css("text-decoration", "line-through");
                   
-             //    console.log(sessionStorage.getItem(sessionStorage.valueOf(x)));
+                  console.log(Object.keys(sessionStorage));
+           //       console.log('index for value ' + x + " " + sessionStorage.getItem(sessionStorage.key(x)));
+         //    console.log( $('li').eq(x));
             }
         }
         }
@@ -202,8 +210,8 @@ $_SESSION['storeDate'] = $showDate;
         // clear the Java Script session data when user clears the list , if not cleared new items are marked as done 
         
           $("#clearData").click(function () {
-              console.log('clicked');
-                        sessionStorage.clear();
+            console.log('clicked');
+            sessionStorage.clear();
                     });
         
     </script>

@@ -33,7 +33,7 @@ Version 1
 
 <form role = "form" action = "<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method = "POST"> 
 
-    Enter a number : <input type = "text" name = "inputItem" placeholder = "Enter your tasks here " />
+    Enter a number : <input type = "text" name = "inputItem" placeholder = "Enter your tasks here "  required="required"/>
 
     <input type = "submit" class="btn btn-success" name = "addTask" value = " Add "> 
 
