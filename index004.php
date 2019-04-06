@@ -19,11 +19,17 @@ Version 3
     - Start addin in custom css
     - add in JavaScript session variables 
     
+Version 4
+    
+    - adding in the due date and time till due functions
+    - added in disable add task until text input 
+    - cleared JS session Storage on clear
+    
 */
 
 session_start();
-
-$showDate = date("Y-m-d h:i:sa");
+date_default_timezone_set("Africa/Johannesburg");
+$showDate = date("Y-m-d"); //h:i:sa
 $_SESSION['storeDate'] = $showDate;
 
 //set session variables from POST 
@@ -53,34 +59,33 @@ $_SESSION['storeDate'] = $showDate;
     Enter a Task : <input type = "text" name = "inputItem" placeholder = "Enter your tasks here " autofocus />
     Select a due Date <input type = "date" name = "inputDate" value="<?php echo date('Y-m-d'); ?>"/>
     
-    <input type = "submit" class="btn btn-success" name = "addTask" value = " Add "> 
+    <input type = "submit" class="btn btn-success" name = "addTask" value = " Add " disabled> 
     
-    <a href="Logout.php" class="btn btn-danger" onclick="return confirm('You are about to clear the list - are you sure? - click OK to confirm');">Clear ALL items</a>
+    <a href="Logout.php" class="btn btn-danger" id="clearData" onclick="return confirm('You are about to clear the list - are you sure? - click OK to confirm');">Clear ALL items</a>
+    
     <br><br>
 
 <?php
     
- if($_POST) {
+ if (isset($_POST['inputItem'])){
      
-    if (isset($_POST['inputItem'])){
-        
+            
       if (!isset($_SESSION['listItem'])) { 
           $_SESSION['listItem'] = array();
       }
-          $_SESSION['listItem'][] = $_POST['inputItem']; 
-          $_SESSION['timeStamp'][] = date("Y-m-d h:i:sa");
+     
+        $_SESSION['listItem'][] = $_POST['inputItem']; 
+        $_SESSION['timeStamp'][] = date("Y-m-d h:i:s");
         $_SESSION['dueDate'][] = $_POST['inputDate']; 
-            display();
-    }
-         
-  }
-    
-//    else{
-//        display();
-// }
-    
+        
+     // PRG method to prevent data from the previous post populating the list on refresh / reload
+     
+       header('location:'.$_SERVER['PHP_SELF']);
+       return;
  
-      
+ }
+   display();
+    
   // function displays the array 
     function display(){
         echo "<ul>";
@@ -97,64 +102,109 @@ $_SESSION['storeDate'] = $showDate;
             echo "<due>";
                 echo " ". $_SESSION['dueDate'] [$x];
              echo "</due>";
-            
+            taskDue($x);
             echo "</li>";
-          
             echo "<br>";
      }
         
         echo "</ul>";        
     }
     
-    ?>
-<?php
+    function taskDue($position){
+    
 
-?>
+        $timeStamp = date_create($_SESSION['timeStamp'] [$position]);     
+        $dueDate= date_create($_SESSION['dueDate'] [$position]);
+        $duration = date_diff($timeStamp, $dueDate);
+        
+                echo " Task due in ";
+                    if ($duration->format('%y') != 0 ){
+                        echo " " .$duration->format('%y') . " years"; }
+                    if ($duration->format('%m') != 0 ){
+                        echo " ". $duration->format('%m'). " months"; }
+                    if ($duration->format('%d') != 0 ){
+                        echo " ". $duration->format('%d') . " days"; }
+                    if ($duration->format('%h') != 0 ){
+                        echo " ". $duration->format('%h') . " hours";}
+
+                    echo " ". $duration->format('%i') . " min";
+                    echo " ". $duration->format('%s') . " sec";
+    }
+    ?>
+
 </form>
 </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <script>
-    // A $( document ).ready() block.
+ 
     $(document).ready(function() {
         console.log( "ready!" );
         renderDisplay();
         
-        var lineState = 0;
         
+        // disables the add Task ( submit button ) until text is entered into the input feild 
+        var changeHandler = function (e) {
+            console.log ($.trim(this.value));
+            if ($.trim(this.value)){
+                $("input[type=submit]").removeAttr("disabled");
+            } else {
+                $("input[type=submit]").attr("disabled", "disabled");        
+            }
+        };
+               // runs above function on the input text feilds 
+
+                    $("input[type=text]").keyup(
+                        changeHandler
+                    )
+                
+    
+   var lineState = 0;
+     
         $('li').click(function(){
             
-               var strikeNum = $(this).index();
-                console.log( strikeNum );
+            if (this.lineState == undefined)
+                {
+                    this.lineState = 0;
+                }
             
-            if (lineState == 0){
+            var strikeNum = $(this).index();
+            console.log( strikeNum );
+            console.log('line state ' + this.lineState);
+
+            
+            if (this.lineState == 0){
                     $(this).css("text-decoration", "line-through");
                     console.log( "line" );
-                    lineState = 1;
+                    this.lineState = 1;
                   sessionStorage.setItem(strikeNum,'1');
             } else {
                     $(this).css("text-decoration", "none");
                     console.log( "none" );
-                    lineState = 0;  
+                    this.lineState = 0;  
                     sessionStorage.setItem(strikeNum,'0');
             }
         });
     });
     
-//        sessionStorage.setItem('testkey','testvalue');
-//        console.log(sessionStorage.getItem('testkey'));
         
         function renderDisplay(){
-            
+                            
             for ( var x = 0; x<(sessionStorage.length); x++ ){
               if (sessionStorage.getItem(sessionStorage.key(x)) == 1){
                 $('li').eq(x).css("text-decoration", "line-through");
                   
-                 console.log(sessionStorage.getItem(sessionStorage.key(x)));
+             //    console.log(sessionStorage.getItem(sessionStorage.valueOf(x)));
             }
         }
         }
         
+        // clear the Java Script session data when user clears the list , if not cleared new items are marked as done 
+        
+          $("#clearData").click(function () {
+              console.log('clicked');
+                        sessionStorage.clear();
+                    });
         
     </script>
     
