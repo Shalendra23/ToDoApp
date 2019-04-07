@@ -28,12 +28,15 @@ Version 4
     
 */
 
+// start PHP session 
+
 session_start();
+
+//set session variables for date
 date_default_timezone_set("Africa/Johannesburg");
 $showDate = date("Y-m-d"); //h:i:sa
 $_SESSION['storeDate'] = $showDate;
 
-//set session variables from POST 
 ?>
 
 <!DOCTYPE html>
@@ -42,38 +45,46 @@ $_SESSION['storeDate'] = $showDate;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>PHP ToDo App</title>
-
+    <title>PHP ToDoList</title>
+    <link rel="icon" href="http://localhost:8080/todoApp/img/favicon.ico">
+    <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link rel="stylesheet" type="text/css" href="css\exercise1.css">
+    <link rel="stylesheet" type="text/css" href="css\exercise1.css">
+    <link href="https://fonts.googleapis.com/css?family=Righteous" rel="stylesheet">
 
 </head>
 <body>
 <div class="container">
-
+    
 <!-- create and display the form -->
 
+    <div class="widget">
+        <a class="weatherwidget-io" href="https://forecast7.com/en/n33d9218d42/cape-town/" data-label_1="CAPE TOWN" data-label_2="WEATHER" ></a>
+        <script>
+        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+        </script>
+    </div>
+<!-- end of  weather widget -->  
+
 <form role = "form" action = "<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method = "POST"> 
-
-  <!-- added in weather widget from https://weatherwidget.io/ - useful to plan to-do items 
-<a class="weatherwidget-io" href="https://forecast7.com/en/n33d9218d42/cape-town/" data-label_1="CAPE TOWN" data-label_2="WEATHER" data-icons="Climacons Animated" data-theme="clear" >CAPE TOWN WEATHER</a>
-    <script>
-    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
-    </script>
     
- end of  weather widget -->  
-    
-    <h1> ToDo App</h1><br>
 
+    <h1> ToDoList </h1>
+    <h2 class='wordDiv'>‘The secret of getting ahead is getting started’ - Mark Twain </h2>
+<div id='control'>
+    <br>
     Enter a Task : <input type = "text" name = "inputItem" placeholder = "Enter your tasks here " required="required" autofocus />
-    Select a due Date <input type = "date" name = "inputDate" value="<?php echo date('Y-m-d'); ?>"/>
+    Select a due Date <input type = "date"  id="dueDatePicker" name = "inputDate" value="<?php echo date('Y-m-d'); ?>"/>
     
-    <input type = "submit" class="btn btn-success" name = "addTask" value = " Add "> 
+    <input type = "submit" class="btn btn-success" id="addTaskBtn" name = "addTask" value = " Add Task"> 
     
-    <a href="Logout.php" class="btn btn-danger" id="clearData" onclick="return confirm('You are about to clear the list - are you sure? - click OK to confirm');">Clear ALL items</a>
+    <a href="Logout.php" class="btn btn-danger" id="clearData" onclick="return confirm('You are about to clear the list - are you sure? - click OK to confirm');">Clear ALL items</a>    <br><br>
     
-    <br><br>
+    <p>   
+        <span id='task'>  Task </span> | <span id='time'>Date Created</span> | <span id='due'> Due Date </span> | <span id ='deadline'> Time Remaining</span>
+    </p>
 
+</div>
 <?php
     
  if (isset($_POST['inputItem'])){
@@ -84,7 +95,7 @@ $_SESSION['storeDate'] = $showDate;
       }
      
         $_SESSION['listItem'][] = $_POST['inputItem']; 
-        $_SESSION['timeStamp'][] = date("Y-m-d h:i:s");
+        $_SESSION['timeStamp'][] = date("Y-m-d h:i:sa");
         $_SESSION['dueDate'][] = $_POST['inputDate']; 
         
      // PRG method to prevent data from the previous post populating the list on refresh / reload
@@ -99,27 +110,34 @@ $_SESSION['storeDate'] = $showDate;
     
   // function displays the array 
     function display(){
-        echo "<ul>";
-        
+        echo "<ul id='taskListItems'>";
+        echo "<br>";
       //  var_dump($_SESSION['listItem']);
      
         for ( $x = 0; $x<(count($_SESSION['listItem'])); $x++){
            
-            echo "<li>";
-                echo $_SESSION['listItem'][$x]. "                 " ;
-             echo "<time>";
+            echo "<li id='listItems'>";
+                echo $_SESSION['listItem'][$x]. " | " ;
+            echo "<span id='time'>";
                 echo " ". $_SESSION['timeStamp'] [$x];
-             echo "</time>";
-            echo "<due>";
-                echo " ". $_SESSION['dueDate'] [$x];
-             echo "</due>";
-            taskDue($x);
-            echo "</li>";
-            echo "<br>";
+            echo "</span> | ";
+                echo "<span id='due'>";
+            echo " ". $_SESSION['dueDate'] [$x];
+                echo "</span>";
+            echo "<span id='deadline'>";
+            
+            // calls task due function to determine time to complete task
+                taskDue($x);
+             echo "</span>";
+         
+             echo "</li>";
+             echo "<br>";
      }
         
         echo "</ul>";        
     }
+    
+      //  task due function determines time left to complete task
     
     function taskDue($position){
     
@@ -128,7 +146,7 @@ $_SESSION['storeDate'] = $showDate;
         $dueDate= date_create($_SESSION['dueDate'] [$position]);
         $duration = date_diff($timeStamp, $dueDate);
         
-                echo " Task due in ";
+                echo " | Task due in ";
                     if ($duration->format('%y') != 0 ){
                         echo " " .$duration->format('%y') . " years"; }
                     if ($duration->format('%m') != 0 ){
@@ -139,44 +157,74 @@ $_SESSION['storeDate'] = $showDate;
                         echo " ". $duration->format('%h') . " hours";}
 
                     echo " ". $duration->format('%i') . " min";
-                    echo " ". $duration->format('%s') . " sec";
+   
     }
-    ?>
+?>
 
-</form>
+    </form>
 </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
-    <script>
+<script>
  
     $(document).ready(function() {
-        console.log( "ready!" );
-        renderDisplay();
+    console.log( "ready!" );
         
-  var lineState = 0;
+    // Today's Date
+//        var todayDate = new Date();
+//          console.log( todayDate );
+//                var dueDate = document.getElementById('dueDatePicker').value;
+//            console.log( dueDate );
+        
+        var btn = document.getElementById('addTaskBtn');
+            btn.addEventListener('click', DueDate);
+        
+                
+ function DueDate(){
      
+     var todayDate = new Date();
+    var dueDate = new Date(document.getElementById('dueDatePicker').value);
+  
+    var dueIn = dueDate.getDate() - todayDate.getDate(); 
+     
+    return console.log(dueIn);
+ }
+        
+        
+     renderDisplay();
+        
+  var lineState = "0";
+        
+
         $('li').click(function(){
+            
+                     
             
             if (this.lineState == undefined)
                 {
-                    this.lineState = 0;
+                    this.lineState = "0";
                 }
             
             var strikeNum = $(this).index();
-            console.log("current index " + strikeNum );
-        //    console.log('line state ' + this.lineState);
-
+           console.log("current index " + strikeNum );
+           console.log('line state ' + this.lineState);
             
-            if (this.lineState == 0){
+            if (this.lineState == "0"){
                     $(this).css("text-decoration", "line-through");
-                    this.lineState = 1;
-                    sessionStorage.setItem(strikeNum,'1');
+                    this.lineState = "1";
+                    sessionStorage.setItem(strikeNum, this.lineState);
             //    console.log(sessionStorage.getItem(strikeNum));
                    
             } else {
                     $(this).css("text-decoration", "none");
-                    this.lineState = 0;  
-                    sessionStorage.setItem(strikeNum,'0');
+                    this.lineState = "0";  
+                    sessionStorage.setItem(strikeNum, this.lineState);
               //      console.log(sessionStorage.getItem(strikeNum));
                 
             }
@@ -184,28 +232,17 @@ $_SESSION['storeDate'] = $showDate;
     });
     
         
+        
+// function to render the display with the line-through using the sessinStorage and key
+        
         function renderDisplay(){
-                            
-        //    console.log(sessionStorage.length);
-             console.log('key0 ' + sessionStorage.getItem(sessionStorage.key(0)));
-              console.log('key1 ' + sessionStorage.getItem(sessionStorage.key(1)));
-               console.log('key2 ' + sessionStorage.getItem(sessionStorage.key(2)));
-           console.log('key3 ' + sessionStorage.getItem(sessionStorage.key(3)));
-            
-            
-            for ( var x = 0; x<(sessionStorage.length); x++ ){
-                console.log('key ' + sessionStorage.getItem(sessionStorage.key(x)));
-                
-              if (sessionStorage.getItem(sessionStorage.key(x)) == 1){
-               //   console.log(sessionStorage.getItem(sessionStorage.key(x)) == '1');
-                $('li').eq(x).css("text-decoration", "line-through");
-                  
-                  console.log(Object.keys(sessionStorage));
-           //       console.log('index for value ' + x + " " + sessionStorage.getItem(sessionStorage.key(x)));
-         //    console.log( $('li').eq(x));
+                               
+            for ( var x = 0; x <=( sessionStorage.length); x++ ){
+               if ( sessionStorage.getItem(sessionStorage.key(x)) == "1" ){
+                      $('li').eq(x).css("text-decoration", "line-through");
+                }
             }
-        }
-        }
+        };
         
         // clear the Java Script session data when user clears the list , if not cleared new items are marked as done 
         
@@ -214,8 +251,26 @@ $_SESSION['storeDate'] = $showDate;
             sessionStorage.clear();
                     });
         
-    </script>
-    
+      
+        // generates the random quotes on the screen to provide motivation inside the h2 tag
         
+        var quotes = new Array('‘Anyone who has never made a mistake has never tried anything new‘ - Albert Einstein', 
+                               '‘Glory lies in the attempt to reach one’s goal and not in reaching it‘ - Mahatma Ghandi', 
+                              '‘It is no good getting furious if you get stuck. What I do is keep thinking about the problem but work on something else‘ - Stephen Hawking ',
+                              '‘The secret of getting ahead is getting started’ - Mark Twain ');
+        
+                var i = 0;
+                    setInterval( function(){
+                    $( '.wordDiv' ).empty().append( quotes[ i ] );
+                    if( i < quotes.length ) {
+                        i++;
+                    } else {
+                        i = 0;
+                    }
+                }, 30000 );
+        
+        
+</script>
+   
 </body>
 </html>

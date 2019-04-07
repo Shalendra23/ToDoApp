@@ -1,16 +1,89 @@
 
-time{
-    font-size: 8;
-    font-family: monospace;
-    color: lightgrey;
+html {
+overflow: scroll;
+overflow-x: hidden;
 }
+::-webkit-scrollbar {
+width: 0px; 
+}
+
+body {
+background-image: url(http://localhost:8080/todoApp/img/capetownbackground.jpg);
+background-color: black;
+background-repeat: no-repeat;
+background-color: #000;
+background-size: 100%;
+z-index: -2;
+opacity: 0.7;
+color: white;
+
+}
+
+.widget{
+    min-height: 150px;
+}
+
+form{
+
+margin-top: 2%;
+z-index: -1;
+background-color: #343a40;
+}
+
 a{
     color: red;
 }
 ul{
-    list-style: square;
+
+    list-style: none;
+    border-top: 2px solid white;
+}
+
+li{
+        margin-left: 10%;
+        margin-right: 10%;
+        border-bottom: 1px solid white;
+        text-align: center;
+        color: whitesmoke; 
 }
 
 h1{
-    text-align: left;
+    text-align: center;
+    font-family: 'Righteous', cursive;
+    color: white;
 }
+h2{
+        font-family: 'Righteous', cursive;
+        font-size: 1rem;
+       color: whitesmoke;
+     text-align: center;
+            
+}
+#task{
+    font-size: 1rem;
+    font-family: monospace;
+    color: whitesmoke;
+}
+
+#due{
+    font-size: 1rem;
+    font-family: monospace;
+    color: forestgreen;
+}
+
+#deadline{
+    font-size: 1rem;
+    font-family: monospace;
+    color: orange;
+}
+
+#time{
+    font-size: 1rem;
+    font-family: monospace;
+    color: darkgray;
+}
+
+#control{
+    text-align: center;
+}
+
