@@ -119,10 +119,10 @@ $_SESSION['storeDate'] = $showDate;
             echo "<li id='listItems'>";
                 echo $_SESSION['listItem'][$x]. " | " ;
             echo "<span id='time'>";
-                echo " ". $_SESSION['timeStamp'] [$x];
-            echo "</span> | ";
+                echo " ". $_SESSION['timeStamp'] [$x] ." | ";
+            echo "</span>";
                 echo "<span id='due'>";
-            echo " ". $_SESSION['dueDate'] [$x];
+            echo " ". $_SESSION['dueDate'] [$x] . " | ";
                 echo "</span>";
             echo "<span id='deadline'>";
             
@@ -142,11 +142,11 @@ $_SESSION['storeDate'] = $showDate;
     function taskDue($position){
     
 
-        $timeStamp = date_create($_SESSION['timeStamp'] [$position]);     
+        $timeStamp = date_create(date("Y-m-d h:i:sa"));     
         $dueDate= date_create($_SESSION['dueDate'] [$position]);
-        $duration = date_diff($timeStamp, $dueDate);
+        $duration = date_diff($dueDate, $timeStamp);
         
-                echo " | Task due in ";
+               echo " Task due in ";
                     if ($duration->format('%y') != 0 ){
                         echo " " .$duration->format('%y') . " years"; }
                     if ($duration->format('%m') != 0 ){
