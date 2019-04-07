@@ -87,6 +87,17 @@ h2{
     text-align: center;
 }
 
-button{
-    color: #5bc0de;
+.hide {
+    display: none;
 }
+
+.hide {
+    display: none;
+}
+
+@media (max-width: 64em) {
+    .desktop-show {
+        display: initial;
+    }
+}
+

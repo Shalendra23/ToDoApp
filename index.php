@@ -25,7 +25,12 @@ Version 4
     - added in disable add task until text input 
     - cleared JS session Storage on clear
     - added in weather widget from : https://weatherwidget.io/ - seems helpful to know weather to plan to do items
+
+Version 5
     
+    - Completed and removed debugging 
+    - Completed Styling
+
 */
 
 // start PHP session 
@@ -73,12 +78,12 @@ $_SESSION['storeDate'] = $showDate;
     <h2 class='wordDiv'>‘The secret of getting ahead is getting started’ - Mark Twain </h2>
 <div id='control'>
     <br>
-    Enter a Task : <input type = "text" name = "inputItem" placeholder = "Enter your tasks here " required="required" autofocus />
-    Select a due Date <input type = "date"  id="dueDatePicker" name = "inputDate" value="<?php echo date('Y-m-d'); ?>"/>
+    Enter a Task : <input type = "text" name = "inputItem" placeholder = "Enter your tasks here " required="required" autofocus /><br class="hide desktop-show">
+    Due Date : <input type = "date"  id="dueDatePicker" name = "inputDate" value="<?php echo date('Y-m-d'); ?>"/><br class="hide desktop-show">
     
-    <input type = "submit" class="btn btn-success" id="addTaskBtn" name = "addTask" value = " Add Task"> 
+    <input type = "submit" class="btn btn-success" id="addTaskBtn" name = "addTask" value = " Add Task">
     
-    <a href="Logout.php" class="btn btn-danger" id="clearData" onclick="return confirm('You are about to clear the list - are you sure? - click OK to confirm');">Clear ALL items</a>    <br><br>
+    <a href="clearData.php" class="btn btn-danger" id="clearData" onclick="return confirm('You are about to clear the list - are you sure? - click OK to confirm');">Clear ALL Tasks</a>    <br><br>
     
     <p>   
         <span id='task'>  Task </span> | <span id='time'>Date Created</span> | <span id='due'> Due Date </span> | <span id ='deadline'> Time Remaining</span>
@@ -86,6 +91,8 @@ $_SESSION['storeDate'] = $showDate;
 
 </div>
 <?php
+    
+//set session variables 
     
  if (isset($_POST['inputItem'])){
      
@@ -157,8 +164,7 @@ $_SESSION['storeDate'] = $showDate;
                         echo " ". $duration->format('%h') . " hours";}
 
                     echo " ". $duration->format('%i') . " min";
-   
-    }
+       }
 ?>
 
     </form>
@@ -176,73 +182,31 @@ $_SESSION['storeDate'] = $showDate;
     $(document).ready(function() {
     console.log( "ready!" );
         
-    // Today's Date
-//        var todayDate = new Date();
-//          console.log( todayDate );
-//                var dueDate = document.getElementById('dueDatePicker').value;
-//            console.log( dueDate );
-        
-        var btn = document.getElementById('addTaskBtn');
-            btn.addEventListener('click', DueDate);
-        
-                
- function DueDate(){
-     
-     var todayDate = new Date();
-    var dueDate = new Date(document.getElementById('dueDatePicker').value);
-  
-    var dueIn = dueDate.getDate() - todayDate.getDate(); 
-     
-    return console.log(dueIn);
- }
-        
-        
-     renderDisplay();
-        
-  var lineState = "0";
-        
 
-        $('li').click(function(){
-            
-                     
-            
-            if (this.lineState == undefined)
-                {
-                    this.lineState = "0";
-                }
-            
-            var strikeNum = $(this).index();
-           console.log("current index " + strikeNum );
-           console.log('line state ' + this.lineState);
-            
-            if (this.lineState == "0"){
-                    $(this).css("text-decoration", "line-through");
-                    this.lineState = "1";
-                    sessionStorage.setItem(strikeNum, this.lineState);
-            //    console.log(sessionStorage.getItem(strikeNum));
-                   
+        var lineState = 0;
+        $('li').each(function(i){
+            $(this).click(function(){
+                          sessionKey = i;
+                          
+          if(lineState == 0){
+                $(this).css("text-decoration", "line-through");
+                lineState = 1;
+                sessionStorage.setItem(sessionKey,lineState);
+                                
             } else {
-                    $(this).css("text-decoration", "none");
-                    this.lineState = "0";  
-                    sessionStorage.setItem(strikeNum, this.lineState);
-              //      console.log(sessionStorage.getItem(strikeNum));
-                
-            }
+                $(this).css("text-decoration", "none");
+                lineState= 0;
+                sessionStorage.setItem(sessionKey,lineState);
+                   }
+          });
+                    
         });
-    });
-    
         
-        
-// function to render the display with the line-through using the sessinStorage and key
-        
-        function renderDisplay(){
-                               
-            for ( var x = 0; x <=( sessionStorage.length); x++ ){
-               if ( sessionStorage.getItem(sessionStorage.key(x)) == "1" ){
-                      $('li').eq(x).css("text-decoration", "line-through");
-                }
-            }
-        };
+        $('li').each(function(i){
+          if( sessionStorage.getItem(i)==1){
+            $(this).css("text-decoration", "line-through");
+          }
+        });
         
         // clear the Java Script session data when user clears the list , if not cleared new items are marked as done 
         
@@ -251,15 +215,15 @@ $_SESSION['storeDate'] = $showDate;
             sessionStorage.clear();
                     });
         
-      
-        // generates the random quotes on the screen to provide motivation inside the h2 tag
+  // generates the random quotes on the screen to provide motivation inside the h2 tag
         
         var quotes = new Array('‘Anyone who has never made a mistake has never tried anything new‘ - Albert Einstein', 
                                '‘Glory lies in the attempt to reach one’s goal and not in reaching it‘ - Mahatma Ghandi', 
                               '‘It is no good getting furious if you get stuck. What I do is keep thinking about the problem but work on something else‘ - Stephen Hawking ',
-                              '‘The secret of getting ahead is getting started’ - Mark Twain ');
+                              '‘“Those who dare to fail miserably can achieve greatly.”’ - John F. Kennedy ');
         
                 var i = 0;
+    
                     setInterval( function(){
                     $( '.wordDiv' ).empty().append( quotes[ i ] );
                     if( i < quotes.length ) {
@@ -269,7 +233,7 @@ $_SESSION['storeDate'] = $showDate;
                     }
                 }, 30000 );
         
-        
+    });         
 </script>
    
 </body>
