@@ -14,8 +14,8 @@ background-repeat: no-repeat;
 background-color: #000;
 background-size: 100%;
 z-index: -2;
-opacity: 0.7;
-color: white;
+opacity: 0.9;
+color: #f9f9f9;
 
 }
 
@@ -36,7 +36,7 @@ a{
 ul{
 
     list-style: none;
-    border-top: 2px solid white;
+    border-top: 2px solid #f9f9f9;
 }
 
 li{
@@ -44,37 +44,37 @@ li{
         margin-right: 10%;
         border-bottom: 1px solid white;
         text-align: center;
-        color: whitesmoke; 
+        color:  #5bc0de; 
 }
 
 h1{
     text-align: center;
     font-family: 'Righteous', cursive;
-    color: white;
+    color: #5bc0de;
 }
 h2{
         font-family: 'Righteous', cursive;
         font-size: 1rem;
-       color: whitesmoke;
+       color: #f9f9f9;
      text-align: center;
             
 }
 #task{
     font-size: 1rem;
     font-family: monospace;
-    color: whitesmoke;
+    color:  #5bc0de;
 }
 
 #due{
     font-size: 1rem;
     font-family: monospace;
-    color: forestgreen;
+    color: 	#5cb85c;
 }
 
 #deadline{
     font-size: 1rem;
     font-family: monospace;
-    color: orange;
+    color: #d9534f;
 }
 
 #time{
@@ -87,3 +87,6 @@ h2{
     text-align: center;
 }
 
+button{
+    color: #5bc0de;
+}
